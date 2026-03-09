@@ -80,7 +80,7 @@ const KitchenScheduleApp = () => {
     };
     setGroups(prev => ({ ...prev, [newCode]: newGroup }));
     setCurrentGroupId(newCode);
-    setGroupCode(newCode);
+    
     setAppState('dashboard');
   };
 
