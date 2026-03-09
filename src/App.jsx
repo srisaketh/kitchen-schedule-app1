@@ -221,7 +221,7 @@ useEffect(() => {
       });
     }
   }
-}, [notificationsEnabled, currentGroupId, weekOffset]);
+}, [notificationsEnabled, currentGroupId, weekOffset, getCurrentWeekBookings]);
 
   if (appState === 'landing') {
     return (
