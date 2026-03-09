@@ -5,7 +5,6 @@ const KitchenScheduleApp = () => {
   const [groups, setGroups] = useState({});
   const [currentGroupId, setCurrentGroupId] = useState(null);
   const [currentName, setCurrentName] = useState('');
-  const [setGroupCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -80,7 +79,6 @@ const KitchenScheduleApp = () => {
     };
     setGroups(prev => ({ ...prev, [newCode]: newGroup }));
     setCurrentGroupId(newCode);
-    
     setAppState('dashboard');
   };
 
@@ -209,19 +207,24 @@ const KitchenScheduleApp = () => {
     return group.bookingsByWeek[weekKey][currentName] || [];
   };
 
-useEffect(() => {
-  if (notificationsEnabled && currentGroupId && weekOffset === 0) {
-    const today = new Date();
-    const dayOfWeek = (today.getDay() + 6) % 7;
-    const currentWeekBookings = getCurrentWeekBookings();
-    if (currentWeekBookings.includes(dayOfWeek)) {
-      new Notification('🍳 Your Cooking Day!', {
-        body: `Today is your turn to cook. Get ready!`,
-        tag: 'cooking-reminder',
-      });
+  useEffect(() => {
+    if (notificationsEnabled && currentGroupId && weekOffset === 0) {
+      const today = new Date();
+      const dayOfWeek = (today.getDay() + 6) % 7;
+      if (!currentGroupId) return;
+      const weekKey = getWeekKey(0);
+      const group = groups[currentGroupId];
+      if (!group.bookingsByWeek || !group.bookingsByWeek[weekKey]) return;
+      const bookings = group.bookingsByWeek[weekKey][currentName] || [];
+      if (bookings.includes(dayOfWeek)) {
+        new Notification('🍳 Your Cooking Day!', {
+          body: `Today is your turn to cook. Get ready!`,
+          tag: 'cooking-reminder',
+        });
+      }
     }
-  }
-}, [notificationsEnabled, currentGroupId, weekOffset, getCurrentWeekBookings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notificationsEnabled, currentGroupId, weekOffset]);
 
   if (appState === 'landing') {
     return (
